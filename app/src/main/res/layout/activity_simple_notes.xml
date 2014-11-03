@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white_background_addnote">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/empty_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/empty_list_background"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/empty_list_text"
+                android:src="@drawable/ic_new_note" />
+
+            <TextView
+                style="@style/empty_list_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/empty_list_margin_top"
+                android:text="@string/empty_list_text" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/notes_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/btn_new_note"
+            android:background="@android:color/white"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:choiceMode="multipleChoice" />
+
+        <Button
+            android:id="@+id/btn_new_note"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_green"
+            android:focusable="false"
+            android:visibility="gone"
+            android:text="NEW NOTE"
+            android:layout_weight="1"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
+</FrameLayout>

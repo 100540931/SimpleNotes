@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="default_background_addnote">#fffcf9b0</color>
+    <color name="default_background_title_addnote">#ffffdf3f</color>
+    <color name="blue_background_addnote">#ffdff3ff</color>
+    <color name="blue_background_title_addnote">#ffc6e5f6</color>
+    <color name="green_background_addnote">#ffebf89f</color>
+    <color name="green_background_title_addnote">#ffe3f6b0</color>
+    <color name="white_background_addnote">#ffffffff</color>
+    <color name="white_background_title_addnote">#ffeeeeee</color>
+    <color name="red_background_addnote">#ffffe2e2</color>
+    <color name="red_background_title_addnote">#fff8d5d6</color>
+    <color name="default_textcolor_addnote">#ff4e322a</color>
+    <color name="default_textlinecolor_addnote">#22000000</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="empty_list_text">#ff858585</color>
+    <color name="empty_list_background">#ffeaeaea</color>
+
+</resources>
