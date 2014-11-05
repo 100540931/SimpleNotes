@@ -1,14 +1,10 @@
 package ca.uoit.igorleonardo.simplenotes.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class Note {
     private long id;
     private String title;
     private String note;
-    private long date_time;
+    private Long date_time;
     private Integer color;
 
     public Note(long id, String title, String note, long date_time, int color) {
@@ -26,7 +22,7 @@ public class Note {
 
     public String getNote() { return note; }
 
-    public long getDatetime() { return date_time; }
+    public Long getDatetime() { return date_time; }
 
     public long getId() { return id; }
 

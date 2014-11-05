@@ -10,34 +10,21 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import ca.uoit.igorleonardo.simplenotes.R;
 import ca.uoit.igorleonardo.simplenotes.model.Note;
-import ca.uoit.igorleonardo.simplenotes.utils.Resources;
+import ca.uoit.igorleonardo.simplenotes.utils.AppResources;
 
 public class ItemAdapter extends ArrayAdapter<Note> implements Filterable {
-
-    private final static int [] NOTE_BG_TITLE_RESOURCES = new int [] {
-        R.color.default_background_title_addnote,
-        R.color.blue_background_title_addnote,
-        R.color.white_background_title_addnote,
-        R.color.green_background_title_addnote,
-        R.color.red_background_title_addnote
-    };
-
-    private Context c;
     private ArrayList<Note> notes;
     private ArrayList<Note> filteredNotes;
     private Note note;
     private Filter noteFilter;
-    private Resources resources = new Resources();
+    private AppResources appResources = new AppResources();
 
     public ItemAdapter(Context c, ArrayList<Note> notes) {
         super(c, 0, notes);
-        this.c = c;
         this.notes = notes;
         this.filteredNotes = notes;
 
@@ -75,10 +62,10 @@ public class ItemAdapter extends ArrayAdapter<Note> implements Filterable {
 
         note = getItem(position);
 
-        holder.color.setBackgroundResource(resources.getBgColor(note.getBgColor(), resources.TITLE));
+        holder.color.setBackgroundResource(appResources.getBgColor(note.getBgColor(), appResources.TITLE));
         holder.title.setText(note.getTitle());
 
-        holder.dateTime.setText(resources.formatDate(note.getDatetime()));
+        holder.dateTime.setText(appResources.formatDate(note.getDatetime()));
 
         return v;
     }

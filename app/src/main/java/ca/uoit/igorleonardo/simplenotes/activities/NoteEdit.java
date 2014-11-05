@@ -13,15 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import ca.uoit.igorleonardo.simplenotes.model.Note;
 import ca.uoit.igorleonardo.simplenotes.R;
 import ca.uoit.igorleonardo.simplenotes.database.DAO;
-import ca.uoit.igorleonardo.simplenotes.utils.Resources;
+import ca.uoit.igorleonardo.simplenotes.utils.AppResources;
 
 
 public class NoteEdit extends Activity implements View.OnClickListener {
@@ -38,7 +33,7 @@ public class NoteEdit extends Activity implements View.OnClickListener {
     private View actions;
     private Button cancelDiscardButton;
     private Button saveUpdateButton;
-    private Resources resources = new Resources();
+    private AppResources appResources = new AppResources();
 
 
 
@@ -106,11 +101,11 @@ public class NoteEdit extends Activity implements View.OnClickListener {
             DAO db = new DAO(this);
             note = db.getNote(id);
 
-            layoutAll.setBackgroundResource(resources.getBgColor(note.getBgColor(), resources.BODY));
-            layoutTitle.setBackgroundResource(resources.getBgColor(note.getBgColor(), resources.TITLE));
+            layoutAll.setBackgroundResource(appResources.getBgColor(note.getBgColor(), appResources.BODY));
+            layoutTitle.setBackgroundResource(appResources.getBgColor(note.getBgColor(), appResources.TITLE));
 
             title.setText(note.getTitle());
-            datetime.setText(resources.formatDate(note.getDatetime()));
+            datetime.setText(appResources.formatDate(note.getDatetime()));
             bodyView.setText(note.getNote());
             body.setText(note.getNote());
             body.setVisibility(View.GONE);
@@ -123,16 +118,16 @@ public class NoteEdit extends Activity implements View.OnClickListener {
 
             // Setting note's default values
             long millis = System.currentTimeMillis();
-            note.setBgColor(resources.YELLOW);
+            note.setBgColor(appResources.YELLOW);
 
             note.setDatetime(millis);
             info.setText("New note");
-            datetime.setText(resources.formatDate(millis));
+            datetime.setText(appResources.formatDate(millis));
         }
 
         // Setting up all click listeners
         btnSetBgColor.setOnClickListener(this);
-        for (int id : resources.sBgSelectorBtnsMap.keySet()) {
+        for (int id : appResources.sBgSelectorBtnsMap.keySet()) {
             ImageView iv = (ImageView) findViewById(id);
             iv.setOnClickListener(this);
         }
@@ -145,11 +140,11 @@ public class NoteEdit extends Activity implements View.OnClickListener {
         int id = view.getId();
         if (id == R.id.btn_set_bg_color) {
             noteBgColorSelector.setVisibility(noteBgColorSelector.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        } else if (resources.sBgSelectorBtnsMap.containsKey(id)) {
-            layoutAll.setBackgroundResource(resources.getBgColor(resources.sBgSelectorBtnsMap.get(id), resources.BODY));
-            layoutTitle.setBackgroundResource(resources.getBgColor(resources.sBgSelectorBtnsMap.get(id), resources.TITLE));
+        } else if (appResources.sBgSelectorBtnsMap.containsKey(id)) {
+            layoutAll.setBackgroundResource(appResources.getBgColor(appResources.sBgSelectorBtnsMap.get(id), appResources.BODY));
+            layoutTitle.setBackgroundResource(appResources.getBgColor(appResources.sBgSelectorBtnsMap.get(id), appResources.TITLE));
             noteBgColorSelector.setVisibility(View.GONE);
-            note.setBgColor(resources.sBgSelectorBtnsMap.get(id));
+            note.setBgColor(appResources.sBgSelectorBtnsMap.get(id));
         } else if(id == R.id.btn_cancel_discard){
             if(cancelDiscardButton.getText().equals("Delete")) { // delete
                 db.deleteNote(note);
@@ -173,7 +168,6 @@ public class NoteEdit extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (noteBgColorSelector.getVisibility() == View.VISIBLE
                 && !inRangeOfView(noteBgColorSelector, ev)) {

@@ -1,9 +1,13 @@
 package ca.uoit.igorleonardo.simplenotes.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
@@ -16,11 +20,14 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import ca.uoit.igorleonardo.simplenotes.adapter.ItemAdapter;
 import ca.uoit.igorleonardo.simplenotes.model.Note;
 import ca.uoit.igorleonardo.simplenotes.R;
 import ca.uoit.igorleonardo.simplenotes.database.DAO;
+import ca.uoit.igorleonardo.simplenotes.utils.AppResources;
 
 
 public class SimpleNotes extends Activity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
@@ -31,8 +38,11 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
     private SearchView searchView;
     private Button btnNewNote;
     private LinearLayout emptyList;
-    private ItemAdapter adapter;
+    public ItemAdapter adapter;
     private ArrayList<Note> notes = new ArrayList<Note>();
+    private AppResources appResources;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    private int sortingMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +52,22 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
         initResources();
     }
 
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        SharedPreferences settings = getSharedPreferences(MyPREFERENCES, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("sortingMethod", sortingMethod);
+
+        editor.commit();
+    }
+
     private void initResources() {
+
+        appResources = new AppResources(SimpleNotes.this);
+        SharedPreferences settings = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
+        sortingMethod = settings.getInt("sortingMethod", 0);
 
         // Setting up listview, dataset and adapter
 
@@ -74,6 +99,9 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
         mainListView.setOnItemLongClickListener(this);
         emptyList.setOnClickListener(this);
         btnNewNote.setOnClickListener(this);
+
+        // Adapter preferable sorting method
+        sortCallback(sortingMethod);
     }
 
 
@@ -126,10 +154,133 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_new_note:
+                Intent intent = new Intent(this, NoteEdit.class);
+                startActivityForResult(intent, 1);
+                break;
+            case R.id.action_sort:
+                showSortDialog();
+                break;
+            case R.id.action_delete_all:
+                showDeleteAllDialog();
+                break;
+            case R.id.action_about:
+                showAbout();
+                break;
+            case R.id.action_quit:
+                showQuit();
+                break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSortDialog() {
+        Resources res = getResources();
+        String[] sortingArray = res.getStringArray(R.array.sorting);
+        ArrayList<String> sortingMethods =
+                new ArrayList<String>(Arrays.asList(sortingArray));
+
+        AlertDialog.Builder myDialog =
+                appResources.createDialog(
+                        SimpleNotes.this,
+                        getLayoutInflater(),
+                        "Sorting",
+                        null,
+                        sortingMethods
+                );
+        myDialog
+                .setPositiveButton(getString(R.string.close).toUpperCase(), null)
+                .show();
+    }
+
+    public void sortCallback(final int i){
+        adapter.sort(new Comparator<Note>() {
+            public int compare(Note object1, Note object2) {
+                sortingMethod = i;
+
+                switch(i){
+                    case 0:
+                        return object1.getTitle().compareTo(object2.getTitle()); // ASC
+                    case 1:
+                        return object2.getTitle().compareTo(object1.getTitle()); // DESC
+                    case 2:
+                        return object1.getDatetime().compareTo(object2.getDatetime()); // ASC
+                    case 3:
+                        return object2.getDatetime().compareTo(object1.getDatetime()); // DESC
+                    case 4:
+                        return object1.getBgColor().compareTo(object2.getBgColor()); // ASC
+                }
+
+                return object1.getTitle().compareTo(object2.getTitle());
+            }
+        });
+    }
+
+    private void showDeleteAllDialog() {
+        AlertDialog.Builder myDialog =
+                appResources.createDialog(
+                        this,
+                        getLayoutInflater(),
+                        getString(R.string.action_delete_all),
+                        "Are you sure you want to delete all notes?",
+                        null
+                );
+        myDialog
+                .setPositiveButton(getString(R.string.yes).toUpperCase(), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        db.deleteAllNotes();
+                        refreshListView();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no).toUpperCase(), null)
+                .show();
+    }
+
+    private void showQuit() {
+        AlertDialog.Builder myDialog =
+                appResources.createDialog(
+                        this,
+                        getLayoutInflater(),
+                        getString(R.string.confirm_exit),
+                        "Are you sure you want to close the "
+                        + getString(R.string.app_name) + "?",
+                        null
+                );
+        myDialog
+                .setPositiveButton(getString(R.string.yes).toUpperCase(), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no).toUpperCase(), null)
+                .show();
+    }
+
+    private void showAbout() {
+        String htmlMessage = "<p>This applications was created as a pre-requisite of my "
+                + getString(R.string.course) + " course at UOIT. </p>"
+                + "<p>For this assignment I had to create a <b>simple Notes app</b> capable "
+                + "to <b>create, store and edit</b> user's notes.</p>"
+                + "<p>As requested students must also to implement at "
+                + "least an extra essential functionality of their choice. "
+                + "I chose to implements: Filter, Sort and Color tag features.</p>"
+                + "<p>Enjoy it!</p>"
+                + "<b>" + getString(R.string.app_author) + "</b>, "
+                + "<i>" + getString(R.string.authors_sid) + "</i>";
+
+        AlertDialog.Builder myDialog =
+                appResources.createDialog(
+                        this,
+                        getLayoutInflater(),
+                        getString(R.string.action_about),
+                        htmlMessage,
+                        null
+                );
+        myDialog
+                .setNegativeButton(getString(R.string.close).toUpperCase(), null)
+                .show();
     }
 
     public void onClick(View v) {
@@ -170,19 +321,25 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
                 searchMenuItem.setVisible(false);
             }
 
-            // Get all notes
-            notes = db.getAllNotes();
-
-            // Clear adapter
-            adapter.clear();
-            // Add all notes received from database
-            adapter.addAll(notes);
-            // Apply those changes
-            adapter.notifyDataSetChanged();
-
-            // Hide the new note button in case of an empty list
-            btnNewNote.setVisibility(mainListView.getCount() > 0 ? View.VISIBLE : View.GONE);
+            refreshListView();
         }
+    }
+
+    public void refreshListView() {
+        // Get all notes
+        notes = db.getAllNotes();
+
+        // Clear adapter
+        adapter.clear();
+        // Add all notes received from database
+        adapter.addAll(notes);
+        // Apply those changes
+        adapter.notifyDataSetChanged();
+
+        sortCallback(sortingMethod);
+
+        // Hide the new note button in case of an empty list
+        btnNewNote.setVisibility(mainListView.getCount() > 0 ? View.VISIBLE : View.GONE);
     }
 
     @Override

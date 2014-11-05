@@ -147,4 +147,13 @@ public class DAO extends SQLiteOpenHelper {
 
         return i;
     }
+
+    public void deleteAllNotes() {
+        openWrite();
+
+        database.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+        onCreate(database);
+
+        close();
+    }
 }
