@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -104,7 +105,6 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
         sortCallback(sortingMethod);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         mainMenu = menu;
@@ -114,6 +114,9 @@ public class SimpleNotes extends Activity implements AdapterView.OnItemClickList
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchMenuItem.getActionView();
+        int searchImgId = getResources().getIdentifier("android:id/search_button", null, null);
+        ImageView v = (ImageView) searchView.findViewById(searchImgId);
+        v.setImageResource(R.drawable.ic_action_search);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         SearchView.OnQueryTextListener textChangeListener = new SearchView.OnQueryTextListener()
